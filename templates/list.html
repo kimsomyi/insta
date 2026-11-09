@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %} 전체 게시물 {% endblock %}
+
+{% block content %}
+<!-- content 영역에 들어갈 코드-->
+
+<h1>전체 게시물</h1>
+{% for post in posts %}
+    <p>{{post.content}}</p>
+    <small>댓글 {{ post.comments | length }}개</small>
+    <small>{{ post.create_at.strftime('%Y%m%d %H:%M') }}</small>
+    <a href="/posts/{{post.id}}">자세히</a>
+{% endfor %}
+
+
+{% endblock %}

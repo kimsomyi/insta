@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %} 수정하기 {% endblock %}
+
+{% block content %}
+
+<h1>EDIT</h1>
+<form action="/posts/{{ post.id }}/update" method="post">
+    <label for="">내용</label>
+    <textarea name="content" id="content" required>{{post.content}}</textarea>
+    <input type="submit">
+</form>
+
+{% endblock %}

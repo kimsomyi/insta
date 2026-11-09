@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %} 상세 보기 {% endblock %}
+
+
+{% block content %}
+
+  <p>{{ post.content }}</p>
+
+  <a href="/posts/{{ post.id }}/edit">수정하기</a>
+  <form action="/posts/{{ post.id }}/delete" method="post">
+    <input type="submit" value="삭제하기">
+  </form>
+
+  <hr>
+
+  <form action="/posts/{{ post.id }}/comments/create" method="post">
+    <input type="text" name="content">
+    <input type="submit" value="댓글 등록">
+  </form>
+
+  <!-- <p>{{ post.comments }}</p> -->
+    
+  {% for comment in post.comments %}
+    <p>{{ comment.content }}</p>
+    <small>{{ comment.create_at.strftime('%H:%M') }}</small>
+    <form action="/posts/{{ post.id }}/comments/{{ comment.id }}/delete" method="post">
+        <input type="submit" value="del">
+    </form>
+  {% else %}
+    <p>첫 댓글을 달아 주세요</p>
+  {% endfor %}
+
+
+{% endblock %}
