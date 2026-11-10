@@ -39,6 +39,17 @@ class Comment(Base):
 app = FastAPI()
 templates = Jinja2Templates(directory='templates')
 
+class User(Base):
+  __tablename__ = 'users'
+
+  id: Mapped[int] = mapped_column(primary_key=True)
+  username: Mapped[str] = mapped_column(unique=True)
+  password_hash: Mapped[str]
+
+
+
+
+
 def get_db():
   with Session(engine) as db:
     yield db 
@@ -150,3 +161,18 @@ def comment_delete(post_id: int, comment_id: int, db: Session = Depends(get_db))
   db.commit()
 
   return RedirectResponse(f'/posts/{post_id}', status_code=303)
+
+
+# a태그를 통해서 들어오는 signup
+@app.get('/signup')
+def signup_form(request: Request):
+  return templates.TemplateResponse(
+    request=request,
+    name='signup.html'
+  )
+
+
+# form method = 'post' 방식으로 들어오는 signup
+@app.post('/signup')
+def signup():
+  pass

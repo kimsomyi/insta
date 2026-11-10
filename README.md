@@ -23,3 +23,29 @@ CREATE DATABASE insta OWNER sd4;
 # .env.example 을 복사해서 .env 를 만들고, 내 DB 정보로 채우기
 cp .env.example .env
 ```
+
+
+- alembic init
+```
+uv run alembic init alembic
+```
+
+- alembic revision
+```
+uv run alembic revision --autogenerate -m "create posts"
+```
+
+- alembic upgrade
+```
+uv run alembic upgrade head
+```
+
+- alembic downgrade
+```
+uv run alembic downgrade -1
+```
+
+- alembic history
+```
+uv run alembic history
+```
