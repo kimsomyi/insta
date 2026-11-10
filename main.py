@@ -6,6 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, rela
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from pwdlib import PasswordHash
 
 load_dotenv()  # .env 파일의 값을 읽어 옴
 DB_URL = os.environ['DB_URL']
@@ -36,8 +37,7 @@ class Comment(Base):
   post_id: Mapped[int] = mapped_column(ForeignKey('posts.id'))
   post: Mapped['Post'] = relationship(back_populates='comments')
 
-app = FastAPI()
-templates = Jinja2Templates(directory='templates')
+
 
 class User(Base):
   __tablename__ = 'users'
@@ -47,7 +47,22 @@ class User(Base):
   password_hash: Mapped[str]
 
 
+# 어떤 유저의 신분증을 보관하는 장소
+class UserSession(Base):
+  __tablename__ = 'sessions' # db 테이블 이름
 
+  # id = 신분증
+  id: Mapped[str] = mapped_column(primary_key=True)
+  user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+  created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+  user: Mapped['User'] = relationship() # User 클래스를 1:1로 설정하겠다
+  # 이 신분증을 통해서 조회하기 위해서 일방향으로 설정함
+
+
+# 전역처리
+app = FastAPI()
+templates = Jinja2Templates(directory='templates')
+password_hash = PasswordHash.recommended()
 
 
 def get_db():
@@ -174,5 +189,52 @@ def signup_form(request: Request):
 
 # form method = 'post' 방식으로 들어오는 signup
 @app.post('/signup')
-def signup():
+def signup(
+  request: Request,
+  username: str = Form(),
+  password: str = Form(),
+  db: Session = Depends(get_db)
+):
+
+  # 이미 있는 유저인지 검증
+  # SELECT * FROM users WHERE username = 'somyi'
+  exists = db.scalar(select(User).where(User.username == username))
+
+  # 이미 유저네임을 사용하는 경우
+  if exists:
+    return templates.TemplateResponse(
+      request=request,
+      name='signup.html',
+      context={'error': '이미 있는 아이디입니다.'}
+    )
+
+
+  # User(username=username, password_hash=password) 얘는 평문으로 저장됨
+
+  # password 암호화 
+  # password_hash = PasswordHash.recommended() <- 얘는 위에 올려서 전역 처리함. 다른 곳에서도 쓸 거임
+  hashed_pw = password_hash.hash(password)
+
+  user = User(username=username, password_hash=hashed_pw)
+  db.add(user)
+  db.commit()
+
+  return RedirectResponse('/login', status_code=303)
+
+
+
+
+# 하나는 아이디와 패스워드를 입력하는 종이
+
+@app.get('/login')
+def login_form(request: Request):
+  return templates.TemplateResponse(
+    request=request,
+    name='login.html'
+  )
+
+# 사용자가 데이터를 입력했을 때 그걸 처리함
+
+@app.post('/login')
+def login():
   pass
