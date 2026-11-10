@@ -21,7 +21,7 @@
 
   <!-- <p>{{ post.comments }}</p> -->
     
-  {% for comment in post.comments %}
+  {% for comment in post.comments | sort(attribute='create_at', reverse=True) %}
     <p>{{ comment.content }}</p>
     <small>{{ comment.create_at.strftime('%H:%M') }}</small>
     <form action="/posts/{{ post.id }}/comments/{{ comment.id }}/delete" method="post">
