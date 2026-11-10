@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from pwdlib import PasswordHash
+import secrets
 
 load_dotenv()  # .env 파일의 값을 읽어 옴
 DB_URL = os.environ['DB_URL']
@@ -236,5 +237,33 @@ def login_form(request: Request):
 # 사용자가 데이터를 입력했을 때 그걸 처리함
 
 @app.post('/login')
-def login():
-  pass
+def login(
+  request: Request,
+  username: str = Form(),
+  password: str = Form(),
+  db: Session = Depends(get_db)
+):
+  # 방금 입력한 아이디에 해당하는 유저 찾기
+  user = db.scalar(select(User).where(User.username == username))
+
+  # password_hash.verify(password, user.password_hash)
+
+  # 유저가 존재하지 않을 때 or 그 유저의 비밀번호와 방금 입력한 비밀번호가 다른 경우 => 에러입니다
+  if (user is None) or not (password_hash.verify(password, user.password_hash)):
+    return templates.TemplateResponse(
+      request=request,
+      name='login.html',
+      context={'error': '아이디가 존재하지 않습니다.'}
+    )
+
+  # 비밀번호가 일치하면 => 신분증 발행 
+  session_id = secrets.token_urlsafe(32) # 랜덤으로 문자열을 넣어 주는데, 문자열에 넣어도 문제 없는 생성기
+  # 발행한 신분증을 DB에 저장
+  user_session = UserSession(id=session_id, user=user)
+  db.add(user_session)
+  db.commit()
+
+  # 신분증을 유저한테 전달 (쿠키에 저장시키기)
+  response = RedirectResponse('/posts', status_code=303)
+  response.set_cookie('session_id', session_id, httponly=True, samesite='lax')
+  return response
