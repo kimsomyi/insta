@@ -11,6 +11,10 @@
     <small>댓글 {{ post.comments | length }}개</small>
     <small>{{ post.create_at.strftime('%Y%m%d %H:%M') }}</small>
     <a href="/posts/{{post.id}}">자세히</a>
+
+    <form action="/posts/{{ post.id }}/likes" method="post">
+        <input type="submit" value="♡" name="" id="">
+    </form>
 {% endfor %}
 
 

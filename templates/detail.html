@@ -6,27 +6,44 @@
 {% block content %}
 
   <p>{{ post.content }}</p>
+  <small>{{ post.user.username }}</small>
+
+  <!-- 로그인 유저와 글 작성자가 일치할 때-->
+   {% if user.id == post.user_id %}
 
   <a href="/posts/{{ post.id }}/edit">수정하기</a>
   <form action="/posts/{{ post.id }}/delete" method="post">
     <input type="submit" value="삭제하기">
   </form>
+  {% endif %}
 
   <hr>
 
+  <!--로그인 안 하면 댓글 등록 창 안 보이게 if문 설정-->
+  {% if user %}
   <form action="/posts/{{ post.id }}/comments/create" method="post">
     <input type="text" name="content">
     <input type="submit" value="댓글 등록">
   </form>
+  {% endif %}
 
   <!-- <p>{{ post.comments }}</p> -->
     
   {% for comment in post.comments | sort(attribute='create_at', reverse=True) %}
-    <p>{{ comment.content }}</p>
-    <small>{{ comment.create_at.strftime('%H:%M') }}</small>
-    <form action="/posts/{{ post.id }}/comments/{{ comment.id }}/delete" method="post">
-        <input type="submit" value="del">
-    </form>
+    <p>
+      {{ comment.content }}
+      <small>{{ comment.user.username }}</small> <!--이 댓글 작성자의 닉네임 보여 줌-->
+      <small>{{ comment.create_at.strftime('%H:%M') }}</small>
+      <!--내가 작성한 댓글에서만 del 보여 주도록 수정하려고 if문-->
+      {% if user.id == comment.user_id %}
+      <form action="/posts/{{ post.id }}/comments/{{ comment.id }}/delete" method="post">
+          <input type="submit" value="del">
+      </form>
+      {% endif %}
+    </p>
+
+
+
   {% else %}
     <p>첫 댓글을 달아 주세요</p>
   {% endfor %}
