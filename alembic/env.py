@@ -22,6 +22,7 @@ if config.config_file_name is not None:
 # 수정한 부분!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # from main import Base, DB_URL
 from database import Base, DB_URL
+import models  # noqa: F401  <- 모델을 불러와야 Base.metadata에 테이블 목록이 채워짐
 
 target_metadata = Base.metadata
 config.set_main_option('sqlalchemy.url', DB_URL)

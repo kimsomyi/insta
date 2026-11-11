@@ -19,7 +19,7 @@ def user_profile(
 
     
     # 프로필 유저가 작성한 모든 게시물 찾기
-    posts = db.scalars( select(Post).where(Post.user_id == owner.id).order_by(Post.create_at.desc()) ).all()
+    posts = db.scalars( select(Post).where(Post.user_id == owner.id).order_by(Post.create_at.desc())).all()
 
     return templates.TemplateResponse(
         request=request,
@@ -29,5 +29,11 @@ def user_profile(
             'posts': posts,
             'user': user
         }
-
     )
+
+@router.post('/users/{username}/follows')
+def user_follow():
+    # 팔로우가 되어 있으면 취소
+
+    # 팔로우가 안 되어 있으면 팔로우 생성
+    pass
