@@ -9,11 +9,12 @@
 {% for post in posts %}
     <p>{{post.content}}</p>
     <small>댓글 {{ post.comments | length }}개</small>
+    <small>좋아요 {{ post.likes | length }} 개</small>
     <small>{{ post.create_at.strftime('%Y%m%d %H:%M') }}</small>
     <a href="/posts/{{post.id}}">자세히</a>
 
     <form action="/posts/{{ post.id }}/likes" method="post">
-        <input type="submit" value="♡" name="" id="">
+        <input type="submit" value="{% if post.id in liked_ids %}❤️{% else %}♡{% endif %}">
     </form>
 {% endfor %}
 
