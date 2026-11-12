@@ -1,7 +1,9 @@
 from fastapi import FastAPI, Request, Depends, Form, HTTPException
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import create_engine, select, func, ForeignKey
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, relationship
 from datetime import datetime
 import os
@@ -19,9 +21,14 @@ engine = create_engine(DB_URL, echo=True)
 # 전역처리
 app = FastAPI()
 
+# /media/... 주소로 오는 요청을 media 폴더의 실제 파일로 연결
+app.mount('/media', StaticFiles(directory='media'), name='media')
+
 app.include_router(posts.router)
 app.include_router(auth.router)
 app.include_router(users.router)
+
+app.mount('/media', StaticFiles(directory='media'), name = 'media')
 
 def get_db():
   with Session(engine) as db:

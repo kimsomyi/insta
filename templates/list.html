@@ -7,6 +7,9 @@
 
 <h1>전체 게시물</h1>
 {% for post in posts %}
+    {% if post.image_url%}
+    <img src="{{ post.image_url }}" alt="" style="width: 200px;">
+    {% endif %}
     <p>{{post.content}}</p>
     <small><a href="/users/{{post.user.username}}">{{ post.user.username }}</a></small>
     <small>댓글 {{ post.comments | length }}개</small>

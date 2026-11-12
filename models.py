@@ -10,6 +10,7 @@ class Post(Base):
 
   id: Mapped[int] = mapped_column(primary_key=True)
   content: Mapped[str]
+  image_url: Mapped[str | None]
   create_at: Mapped[datetime] = mapped_column(server_default=func.now())
   comments: Mapped[list['Comment']] = relationship(
     back_populates='post',

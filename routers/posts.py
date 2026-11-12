@@ -1,6 +1,7 @@
-from fastapi import Request, Form, HTTPException, APIRouter
+from fastapi import Request, Form, HTTPException, APIRouter, File, UploadFile
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
+from photos import save_photo
 
 from models import Post, Comment, Like
 from deps import SessionDep, CurrentUserDep, templates, PostDep
@@ -56,12 +57,16 @@ def post_new(
 def post_create(
   db: SessionDep,
   user: CurrentUserDep,
-  content: str = Form()
+  content: str = Form(),
+  photo: UploadFile = File()
 ):
+  # print(photo.filename, photo.content_type)
+  image_url = save_photo(photo)
+
   if user is None:
     return RedirectResponse('/login', status_code=303)
   
-  post = Post(content=content, user=user) #user=user 추가함
+  post = Post(content=content, user=user, image_url=image_url) #user=user 추가함
   db.add(post)
   db.commit()
   # from fastapi.responses import RedirectResponse
