@@ -6,11 +6,13 @@
 
     <h1>{{ owner.username }}</h1>
     <p>게시물 {{ posts | length }} 개</p>
+    <p>팔로우 {{ owner.followers | length }}</p>
+    <p>팔로잉 {{ owner.followings | length }}</p>
 
     <!--내가 내 자신을 팔로우 할 수 없도록 if 처리-->
     {% if user.id != owner.id %}
     <form action="/users/{{owner.username}}/follows" method="post">
-        <input type="submit" value="팔로우">
+        <input type="submit" value="{% if follow %}팔로우 취소{% else %}팔로우{% endif %}">
     </form>
     {% endif %}
     <hr>

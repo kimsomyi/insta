@@ -23,7 +23,10 @@ def post_list(
 
   liked_ids = []
   if user:
-    liked_ids = db.scalars( select(Like.post_id).where(user.id == Like.user_id) ).all()
+    # liked_ids = db.scalars( select(Like.post_id).where(user.id == Like.user_id) ).all()
+
+    # user.likes => select(Like).where(user.id == Like.user_id)
+    liked_ids = [like.post_id for like in user.likes ]
 
   # posts = db.scalars(select(Post)).all() # 전체 게시물 가지고 오는 코드 (정렬 X)
   posts = db.scalars(select(Post).order_by(Post.create_at.desc())).all() # (정렬 O)

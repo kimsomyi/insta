@@ -43,6 +43,9 @@ class User(Base):
   password_hash: Mapped[str]
   posts: Mapped[list['Post']] = relationship(back_populates='user')
   # commets: Mapped[list['Post']] = relationship(back_populates='user') 유저가 작성한 댓글만 모아서 보여 줄 필요성은 없어서 주석처리 하고 Comment 클래스에서만 user 관계
+  likes: Mapped[list['Like']] = relationship()
+  followings: Mapped[list['Follow']] = relationship(foreign_keys='Follow.follower_id')
+  followers: Mapped[list['Follow']] = relationship(foreign_keys='Follow.following_id')
 
 # 어떤 유저의 신분증을 보관하는 장소
 class UserSession(Base):
