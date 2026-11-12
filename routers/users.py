@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, File, UploadFile
 from fastapi.responses import RedirectResponse
 from deps import templates, SessionDep, CurrentUserDep
 from sqlalchemy import select
 from models import User, Post, Follow
+from photos import save_photo
 
 router = APIRouter()
 
@@ -71,6 +72,21 @@ def user_follow(
         follow = Follow(follower_id=user.id, following_id=owner.id)
         db.add(follow)
 
+    db.commit()
+
+    return RedirectResponse(f'/users/{username}', status_code=303)
+
+
+# 11-12 작성
+@router.post('/users/{username}/avatar')
+def user_avatar(
+    username: str,
+    db: SessionDep,
+    user: CurrentUserDep,
+    photo: UploadFile = File()
+):
+    avatar_url = save_photo(photo)
+    user.avatar_url = avatar_url
     db.commit()
 
     return RedirectResponse(f'/users/{username}', status_code=303)

@@ -3,7 +3,7 @@
 {% block title %} 프로필 {% endblock %}
 
 {% block content %}
-
+    <img src="{{ owner.avatar_url }}" alt="" style="width: 200px;">
     <h1>{{ owner.username }}</h1>
     <p>게시물 {{ posts | length }} 개</p>
     <p>팔로우 {{ owner.followers | length }}</p>
@@ -13,6 +13,11 @@
     {% if user.id != owner.id %}
     <form action="/users/{{owner.username}}/follows" method="post">
         <input type="submit" value="{% if follow %}팔로우 취소{% else %}팔로우{% endif %}">
+    </form>
+    {% else %}
+    <form action="/users/{{user.username}}/avatar" method="post" enctype="multipart/form-data">
+        <input type="file" name="photo" accept="image/*" id="">
+        <input type="submit">
     </form>
     {% endif %}
     <hr>
