@@ -41,6 +41,7 @@ class User(Base):
 
   id: Mapped[int] = mapped_column(primary_key=True)
   username: Mapped[str] = mapped_column(unique=True)
+  avatar_url: Mapped[str | None]
   password_hash: Mapped[str]
   posts: Mapped[list['Post']] = relationship(back_populates='user')
   # commets: Mapped[list['Post']] = relationship(back_populates='user') 유저가 작성한 댓글만 모아서 보여 줄 필요성은 없어서 주석처리 하고 Comment 클래스에서만 user 관계
